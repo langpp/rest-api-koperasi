@@ -1,27 +1,62 @@
-'use strict';
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
-module.exports = (sequelize, DataTypes) => {
-  var User = sequelize.define('User', {
-    name: DataTypes.STRING,
-    email: {
-      type:  DataTypes.STRING,
-      validate: {
-        isEmail: {
-          msg: "Email must in format foo@bar.com"
-        }
-      }
-    },
-    password: DataTypes.STRING,
-    role: DataTypes.STRING,
-  }, {});
-  User.associate = function(models) {
-    // associations can be defined here
-  };
-  User.beforeCreate((user) => {
 
-    user.password = bcrypt.hashSync(user.password,10);
+module.exports = (sequelize, Sequelize) => {
+	const User = sequelize.define('user', {
+		id_user: {
+			type: Sequelize.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
+		},
+		email: {
+			type: Sequelize.STRING
+		},
+		no_telp: {
+			type: Sequelize.STRING
+		},
+		password: {
+			type: Sequelize.INTEGER
+		},
+		foto: {
+			type: Sequelize.STRING,
+		},
+		role: {
+			type: Sequelize.STRING
+		},
+		status: {
+			type: Sequelize.STRING
+		},
+		jabatan: {
+			type: Sequelize.STRING
+		},
+		token: {
+			type: Sequelize.STRING
+		},
+		no_va: {
+			type: Sequelize.STRING
+		},
+		otp: {
+			type: Sequelize.STRING
+		},
+	});
 
-  })
-  return User;
-};
+	User.beforeCreate((user, options) => {
+
+		return bcrypt.hash(user.password, 10)
+			.then(hash => {
+				user.password = hash;
+			})
+			.catch(err => {
+				throw new Error();
+			});
+	})
+
+	User.prototype.comparePassword = function (pw, callback) {
+		let err, pass
+		if (!this.password) return false;
+
+		bcrypt.compare(pw, this.password, callback);
+	}
+
+	return User;
+}
