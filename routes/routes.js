@@ -8,8 +8,8 @@ module.exports = (app) => {
 
   app.post('/api/login', users.logincheck);
 
-  // app.get('/api/users', tokencheck, users.findAll);
-  app.get('/api/users', users.findAll);
+  app.get('/api/users', tokencheck, users.findAll);
+  // app.get('/api/users', users.findAll);
 
   app.get('/api/users/:user_id', users.findOne);
 
@@ -32,8 +32,10 @@ app.set('superSecret', config.secret); // secret variable
 
 const tokencheck = (req, res, next) => {
 
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
+ var header = req.headers.authorization.split(' ');
+  var token = header[1];
+  // var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  console.log(token);
   // decode token
   if (token) {
 
@@ -41,8 +43,8 @@ const tokencheck = (req, res, next) => {
     jwt.verify(token, app.get('superSecret'), (err, decoded) => {
       if (err) {
         return res.json({
-          success: false,
-          message: 'Failed to authenticate token.'
+          res: 'failed',
+          message: 'Failed to authenticate token'
         });
       } else {
         req.decoded = decoded;
@@ -53,8 +55,8 @@ const tokencheck = (req, res, next) => {
   } else {
 
     return res.status(403).send({
-      success: false,
-      message: 'No token provided.'
+      res: 'failed',
+      message: 'No token provided'
     });
 
   }

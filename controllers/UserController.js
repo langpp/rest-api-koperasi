@@ -1,11 +1,12 @@
 const db = require('../models/index.js');
-const User = db.user;
+const Users = db.users;
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var express = require('express');
 var app = express();
 var config = require('../config/config.js'); // get our config file
 app.set('superSecret', config.secret); // secret variable
 var Sequelize = require('sequelize');
+const bcrypt = require("bcrypt");
 const sequelize = new Sequelize('koperasi', 'root', null, {
     dialect: 'mysql'
 });
@@ -17,24 +18,29 @@ exports.create = (req, res) => {
         no_telp,
         password: password,
     } = req.body;
-    User.create({
+    Users.create({
             email: email,
             no_telp: no_telp,
             password: password,
+            foto: '',
+            role: '',
+            status: '',
+            jabatan: '',
+            token: '',
+            no_va: '',
+            otp: '',
         })
         .then(data => res.status(201).json({
-            message: 'New User has been created.'
+            success: true
         }))
         .catch(error => res.json({
-            error: true,
-            data: [],
-            error: data
+            success: false,
         }));
 };
 
 // Retrieve and return all Users from the database.
 exports.findAll = (req, res) => {
-    User.findAll({})
+    Users.findAll({})
         .then(user => res.json({
             data: user,
             message: 'You got the details of All Users'
@@ -51,13 +57,13 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
     //Get One User using ID
     const id_user = req.params.id_user;
-    User.findOne({
+    Users.findOne({
             where: {
                 id_user: id_user
             }
         }, )
-        .then(user => res.status(201).json({
-            data: user,
+        .then(users => res.status(201).json({
+            data: users,
             message: 'You Got the User detail with Id:' + id_user
         }))
         .catch(error => res.json({
@@ -76,7 +82,7 @@ exports.update = (req, res) => {
         email,
         password
     } = req.body;
-    User.update({
+    Users.update({
             first_name: first_name,
             last_name: last_name,
             email: email,
@@ -87,7 +93,7 @@ exports.update = (req, res) => {
                 id_user: id_user
             }
         })
-        .then(user => res.status(201).json({
+        .then(users => res.status(201).json({
             message: 'User has been updated.'
         }))
         .catch(error => res.json({
@@ -100,7 +106,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     const id_user = req.params.id_user;
 
-    User.destroy({
+    Users.destroy({
             where: {
                 id_user: id_user
             }
@@ -129,19 +135,17 @@ exports.getage = (req, res) => {
 
 // Find a single User with a userId
 exports.logincheck = (req, res) => {
-
     const email = req.body.email;
     const password = req.body.password;
-
     User.findOne({
         where: {
             email: email
         }
-    }).then((user) => {
+    }).then((users) => {
 
-        if (user) {
+        if (users) {
 
-            user.comparePassword(password, (error, response) => {
+            users.comparePassword(password, (error, response) => {
                 if (error) return res.status(401).json(handleUnAuthorizedError);
 
                 if (response) {
@@ -149,13 +153,11 @@ exports.logincheck = (req, res) => {
                         email: email
                     };
                     var token = jwt.sign(payload, app.get('superSecret'), {
-                        expiresIn: '24h' // expires in 24 hours
+                        expiresIn: '48h'
                     });
 
-                    // return the information including token as JSON
                     res.json({
                         success: true,
-                        message: 'Enjoy your token!',
                         token: token
                     });
                 } else {
@@ -166,12 +168,10 @@ exports.logincheck = (req, res) => {
         } else {
             res.status(401).json(handleUnAuthorizedError);
         };
-
     }).catch((error) => res.status(401).json(handleUnAuthorizedError));
 };
 
 let handleUnAuthorizedError = {
     success: false,
-    message: 'UnAuthorized',
     token: null
 }

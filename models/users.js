@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 
 module.exports = (sequelize, Sequelize) => {
-	const User = sequelize.define('user', {
+	const Users = sequelize.define('users', {
 		id_user: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -40,23 +40,25 @@ module.exports = (sequelize, Sequelize) => {
 		},
 	});
 
-	User.beforeCreate((user, options) => {
-
-		return bcrypt.hash(user.password, 10)
+	Users.beforeCreate((users, options) => {
+		return bcrypt.hash(users.password, 12)
 			.then(hash => {
-				user.password = hash;
+				users.password = hash;
 			})
 			.catch(err => {
 				throw new Error();
 			});
 	})
 
-	User.prototype.comparePassword = function (pw, callback) {
+	Users.prototype.comparePassword = function (pw, callback) {
 		let err, pass
 		if (!this.password) return false;
 
 		bcrypt.compare(pw, this.password, callback);
+		console.log(this.password);
+		console.log(pw);
+		console.log(bcrypt.compare(pw, this.password));
 	}
 
-	return User;
+	return Users;
 }
