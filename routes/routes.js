@@ -4,18 +4,19 @@ module.exports = (app) => {
   const query = require('../controllers/queryController.js');
 
   //Users
-  app.post('/api/users', users.create);
+  app.post('/api/checkUser', users.checkUser);
+  app.post('/api/resendOTP', users.resendOTP);
+  app.post('/api/registerPassword', users.registerPassword);
+  app.post('/api/loginCheck', users.loginCheck);
 
-  app.post('/api/login', users.logincheck);
+  // app.get('/api/users', tokencheck, users.findAll);
+  // // app.get('/api/users', users.findAll);
 
-  app.get('/api/users', tokencheck, users.findAll);
-  // app.get('/api/users', users.findAll);
+  // app.get('/api/users/:user_id', users.findOne);
 
-  app.get('/api/users/:user_id', users.findOne);
+  // app.put('/api/users/:user_id', users.update);
 
-  app.put('/api/users/:user_id', users.update);
-
-  app.delete('/api/users/:user_id', users.delete);
+  // app.delete('/api/users/:user_id', users.delete);
 
   //query
   app.get('/api/details', query.getborrow);
@@ -43,8 +44,9 @@ const tokencheck = (req, res, next) => {
     jwt.verify(token, app.get('superSecret'), (err, decoded) => {
       if (err) {
         return res.json({
-          res: 'failed',
-          message: 'Failed to authenticate token'
+          error: true,
+          data: [],
+          response: 'Failed to authenticate token'
         });
       } else {
         req.decoded = decoded;
@@ -55,8 +57,9 @@ const tokencheck = (req, res, next) => {
   } else {
 
     return res.status(403).send({
-      res: 'failed',
-      message: 'No token provided'
+      error: true,
+      data: [],
+      response: 'No token provided'
     });
 
   }

@@ -29,9 +29,6 @@ module.exports = (sequelize, Sequelize) => {
 		jabatan: {
 			type: Sequelize.STRING
 		},
-		token: {
-			type: Sequelize.STRING
-		},
 		no_va: {
 			type: Sequelize.STRING
 		},
@@ -55,9 +52,6 @@ module.exports = (sequelize, Sequelize) => {
 		if (!this.password) return false;
 
 		bcrypt.compare(pw, this.password, callback);
-		console.log(this.password);
-		console.log(pw);
-		console.log(bcrypt.compare(pw, this.password));
 	}
 
 	return Users;
