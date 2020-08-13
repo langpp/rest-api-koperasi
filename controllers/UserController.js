@@ -15,15 +15,22 @@ const sequelize = new Sequelize('koperasi', 'root', null, {
 exports.checkUser = (req, res) => {
     const otpNumber = Math.floor(1000 + Math.random() * 9000);
     const no_telp = req.body.no_telp;
+    const payload = {
+        no_telp: no_telp
+    };
+    var token = jwt.sign(payload, app.get('superSecret'), {
+        expiresIn: '720h'
+    });
     Users.findOne({
         where: {
             no_telp: no_telp
         }
-    }, )
+    })
     .then(users => {
         if (users) {
             Users.update({
                 otp: otpNumber,
+                otp_valid : validOTP
             }, {
                 where: {
                     no_telp: no_telp
@@ -31,7 +38,7 @@ exports.checkUser = (req, res) => {
             })
             .then(users => res.status(201).json({
                 error: false,
-                data: [{no_telp : no_telp, otp : otpNumber}],
+                data: [{no_telp : no_telp, otp : otpNumber, token: token, otp_valid : validOTP}],
                 response: "OTP Dikirim Ke Nomor Tersebut"
             }))
             .catch(error => res.json({
@@ -54,10 +61,11 @@ exports.checkUser = (req, res) => {
                 token: '',
                 no_va: '0',
                 otp: otpNumber,
+                otp_valid : validOTP
             })
             .then(data => res.status(201).json({
                 error: false,
-                data: [{no_telp : no_telp}],
+                data: [{no_telp : no_telp, otp : otpNumber, token: token, otp_valid : validOTP}],
                 response: "Registrasi Berhasil. OTP Dikirim Ke Nomor Tersebut"
             }))
             .catch(error => res.status(201).json({
@@ -80,6 +88,7 @@ exports.checkUser = (req, res) => {
 exports.resendOTP = (req, res) => {
     const otpNumber = Math.floor(1000 + Math.random() * 9000);
     const no_telp = req.body.no_telp;
+
     Users.update({
         otp: otpNumber,
     }, {
@@ -104,7 +113,6 @@ exports.registerPassword = (req, res) => {
     const no_telp = req.body.no_telp;
     var salt = bcrypt.genSaltSync(10);
     const password = bcrypt.hashSync(req.body.password, salt);
-    console.log(password);
     Users.update({
         password: password,
     }, {
@@ -141,7 +149,7 @@ exports.loginCheck = (req, res) => {
                         no_telp: no_telp
                     };
                     var token = jwt.sign(payload, app.get('superSecret'), {
-                        expiresIn: '48h'
+                        expiresIn: '720h'
                     });
                     res.json({
                         error: false,
@@ -271,3 +279,7 @@ let handleUnAuthorizedError = {
     data: [],
     response:"Token NULL"
 }
+
+var newDate = new Date ();
+var validOTP = new Date ( newDate );
+validOTP.setMinutes ( newDate.getMinutes() + 30 );

@@ -5,9 +5,9 @@ module.exports = (app) => {
 
   //Users
   app.post('/api/checkUser', users.checkUser);
-  app.post('/api/resendOTP', users.resendOTP);
-  app.post('/api/registerPassword', users.registerPassword);
   app.post('/api/loginCheck', users.loginCheck);
+  app.post('/api/resendOTP', tokencheck, users.resendOTP);
+  app.post('/api/registerPassword', tokencheck, users.registerPassword);
 
   // app.get('/api/users', tokencheck, users.findAll);
   // // app.get('/api/users', users.findAll);
@@ -25,22 +25,18 @@ module.exports = (app) => {
 
 }
 
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var jwt = require('jsonwebtoken');
 var express = require('express');
 var app = express();
-var config = require('../config/config.js'); // get our config file
-app.set('superSecret', config.secret); // secret variable
+var config = require('../config/config.js');
+app.set('superSecret', config.secret);
 
 const tokencheck = (req, res, next) => {
-
- var header = req.headers.authorization.split(' ');
-  var token = header[1];
-  // var token = req.body.token || req.query.token || req.headers['x-access-token'];
-  console.log(token);
-  // decode token
+  console.log(req.headers.authorization);
+  if (req.headers.authorization) {
+    var header = req.headers.authorization.split(' ');
+    var token = header[1];
   if (token) {
-
-    // verifies secret and checks exp
     jwt.verify(token, app.get('superSecret'), (err, decoded) => {
       if (err) {
         return res.json({
@@ -53,14 +49,18 @@ const tokencheck = (req, res, next) => {
         next();
       }
     });
-
   } else {
-
     return res.status(403).send({
       error: true,
       data: [],
       response: 'No token provided'
     });
-
+  }
+  }else{
+    return res.status(403).send({
+      error: true,
+      data: [],
+      response: 'No token provided'
+    });
   }
 };

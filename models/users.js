@@ -35,6 +35,9 @@ module.exports = (sequelize, Sequelize) => {
 		otp: {
 			type: Sequelize.STRING
 		},
+		otp_valid: {
+			type: Sequelize.DATE
+		},
 	});
 
 	Users.beforeCreate((users, options) => {
