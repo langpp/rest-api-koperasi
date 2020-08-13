@@ -8,6 +8,7 @@ module.exports = (app) => {
   app.post('/api/loginCheck', users.loginCheck);
   app.post('/api/resendOTP', tokencheck, users.resendOTP);
   app.post('/api/registerPassword', tokencheck, users.registerPassword);
+  app.post('/api/validateOTP', tokencheck, users.validateOTP);
 
   // app.get('/api/users', tokencheck, users.findAll);
   // // app.get('/api/users', users.findAll);

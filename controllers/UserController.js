@@ -2,6 +2,7 @@ const db = require('../models/index.js');
 const Users = db.users;
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var express = require('express');
+var moment = require('moment');
 var app = express();
 var config = require('../config/config.js'); // get our config file
 app.set('superSecret', config.secret); // secret variable
@@ -88,9 +89,10 @@ exports.checkUser = (req, res) => {
 exports.resendOTP = (req, res) => {
     const otpNumber = Math.floor(1000 + Math.random() * 9000);
     const no_telp = req.body.no_telp;
-
+    var valid = validOTP;
     Users.update({
         otp: otpNumber,
+        otp_valid : valid
     }, {
         where: {
             no_telp: no_telp
@@ -98,7 +100,7 @@ exports.resendOTP = (req, res) => {
     })
     .then(users => res.status(201).json({
         error: false,
-        data: [{no_telp : no_telp, otp : otpNumber}],
+        data: [{no_telp : no_telp, otp : otpNumber, otp_valid : valid}],
         response: "OTP Dikirim Ke Nomor Tersebut"
     }))
     .catch(error => res.json({
@@ -106,6 +108,49 @@ exports.resendOTP = (req, res) => {
         data: [],
         response: error
     }));
+
+    console.log(valid);
+};
+
+// VALIDATE OTP
+exports.validateOTP = (req, res) => {
+    const no_telp = req.body.no_telp;
+    const otp = req.body.otp;
+
+    Users.findOne({
+        where: {
+            no_telp: no_telp
+        }
+    })
+    .then(users => {
+        if (users) {
+            // if (dateNow >= users.otp_valid) {
+                console.log(dateNow);
+                console.log(users.otp_valid);
+            // }else{
+            //     console.log("gagal");
+            // }
+
+            res.status(201).json({
+                error: false,
+                data: [{otp:users.otp_valid, date: dateNow}],
+                response: "OTP Dikirim Ke Nomor Tersebut"
+            });
+        } else {
+            res.status(201).json({
+                error: true,
+                data: [],
+                response: "Gagal Registrasi"
+            });
+        }
+    })
+    .catch(error => {
+        res.json({
+            error: true,
+            data: [],
+            response: error
+        })
+    });
 };
 
 // INSERT NEW PASSWORD AFTER REGISTER
@@ -280,6 +325,6 @@ let handleUnAuthorizedError = {
     response:"Token NULL"
 }
 
-var newDate = new Date ();
-var validOTP = new Date ( newDate );
-validOTP.setMinutes ( newDate.getMinutes() + 30 );
+var date = new Date();
+var dateNow = moment.tz(date, "Asia/Jakarta").format("YYYY-MM-DD HH:mm:ss");
+var validOTP = moment.tz(date, "Asia/Jakarta").add(1, 'Hours').format("YYYY-MM-DD HH:mm:ss");

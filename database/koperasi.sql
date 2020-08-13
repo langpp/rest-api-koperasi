@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 08, 2020 at 06:30 PM
+-- Generation Time: Aug 13, 2020 at 08:51 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.6
 
@@ -83083,10 +83083,10 @@ CREATE TABLE `role` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `user` (
+CREATE TABLE `users` (
   `id_user` int(11) NOT NULL,
   `email` varchar(100) NOT NULL,
   `no_telp` varchar(50) NOT NULL,
@@ -83095,19 +83095,28 @@ CREATE TABLE `user` (
   `role` int(11) NOT NULL,
   `status` enum('Aktif','Tidak','','') NOT NULL,
   `jabatan` int(11) NOT NULL,
-  `token` text NOT NULL,
   `no_va` varchar(150) NOT NULL,
   `otp` varchar(11) NOT NULL,
-  `created_at` datetime NOT NULL
+  `otp_valid` datetime NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id_user`, `email`, `no_telp`, `password`, `foto`, `role`, `status`, `jabatan`, `no_va`, `otp`, `otp_valid`, `createdAt`, `updatedAt`) VALUES
+(1, 'gilangpermana1407@gmail.com', '0895616848424', '$2b$12$yGrUIOX0dM1Zp1QRBczEDOEge82CP5nKckLBFBNrXAsMbX.tTpWpW', '', 1, 'Aktif', 1, '123', '7420', '2020-08-13 15:13:17', '2020-08-10 02:06:31', '2020-08-13 07:13:20'),
+(4, '', '08988477959', '$2b$10$eX2j8dtUNVrlmnBpKPPB3Ojh/1oOAwtsYs8ABEZxiLE7fRPEcRCa.', '', 0, 'Tidak', 0, '0', '3683', '0000-00-00 00:00:00', '2020-08-10 08:29:45', '2020-08-10 08:51:36');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_identitas`
+-- Table structure for table `users_identitas`
 --
 
-CREATE TABLE `user_identitas` (
+CREATE TABLE `users_identitas` (
   `id_identitas` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
   `nama_lengkap` varchar(100) NOT NULL,
@@ -83121,10 +83130,10 @@ CREATE TABLE `user_identitas` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_rekening`
+-- Table structure for table `users_rekening`
 --
 
-CREATE TABLE `user_rekening` (
+CREATE TABLE `users_rekening` (
   `id_rekening` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
   `id_bank` int(11) NOT NULL,
@@ -83229,21 +83238,21 @@ ALTER TABLE `role`
   ADD PRIMARY KEY (`id_role`);
 
 --
--- Indexes for table `user`
+-- Indexes for table `users`
 --
-ALTER TABLE `user`
+ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`);
 
 --
--- Indexes for table `user_identitas`
+-- Indexes for table `users_identitas`
 --
-ALTER TABLE `user_identitas`
+ALTER TABLE `users_identitas`
   ADD PRIMARY KEY (`id_identitas`);
 
 --
--- Indexes for table `user_rekening`
+-- Indexes for table `users_rekening`
 --
-ALTER TABLE `user_rekening`
+ALTER TABLE `users_rekening`
   ADD PRIMARY KEY (`id_rekening`);
 
 --
@@ -83317,21 +83326,21 @@ ALTER TABLE `role`
   MODIFY `id_role` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT for table `users`
 --
-ALTER TABLE `user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `users`
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `user_identitas`
+-- AUTO_INCREMENT for table `users_identitas`
 --
-ALTER TABLE `user_identitas`
+ALTER TABLE `users_identitas`
   MODIFY `id_identitas` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `user_rekening`
+-- AUTO_INCREMENT for table `users_rekening`
 --
-ALTER TABLE `user_rekening`
+ALTER TABLE `users_rekening`
   MODIFY `id_rekening` int(11) NOT NULL AUTO_INCREMENT;
 
 --

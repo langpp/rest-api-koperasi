@@ -36,7 +36,7 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING
 		},
 		otp_valid: {
-			type: Sequelize.DATE
+			type: Sequelize.STRING
 		},
 	});
 
