@@ -3,6 +3,9 @@ var app = express();
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var config = require('./config/config.js');
+const fileUpload = require('express-fileupload');
+const morgan = require('morgan');
+const _ = require('lodash');
 app.set('superSecret', config.secret);
 app.use(cors());
 
@@ -16,6 +19,12 @@ app.use(function (req, res, next) {
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
+
+app.use(fileUpload({
+    createParentPath: true
+}));
+
+app.use(morgan('dev'));
 
 const db = require('./models/index.js');
 

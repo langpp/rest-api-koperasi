@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING
 		},
 		password: {
-			type: Sequelize.INTEGER
+			type: Sequelize.STRING
 		},
 		foto: {
 			type: Sequelize.STRING,
@@ -26,17 +26,17 @@ module.exports = (sequelize, Sequelize) => {
 		status: {
 			type: Sequelize.STRING
 		},
-		jabatan: {
-			type: Sequelize.STRING
-		},
 		no_va: {
 			type: Sequelize.STRING
 		},
 		otp: {
-			type: Sequelize.STRING
+			type: Sequelize.INTEGER
 		},
 		otp_valid: {
 			type: Sequelize.STRING
+		},
+		wallet: {
+			type: Sequelize.INTEGER
 		},
 	});
 
