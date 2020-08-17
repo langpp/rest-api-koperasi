@@ -63,7 +63,27 @@ module.exports = (app) => {
   app.post('/changeimageprofile', tokencheck, dashboard.changeimageprofile);
   app.get('/userbyid/:id_user', tokencheck, dashboard.userbyid);
   
+  // Iuran Function
+  app.post('/mutasiiuranwajib', tokencheck, iuran.mutasiIuranWajib);
+  app.get('/mutasiiuransukarela/:id_user', tokencheck, iuran.mutasiIuranSukarela);
+  app.get('/riwayatiuran/:id_user', tokencheck, iuran.riwayatIuran);
+  app.post('/totaliuran', tokencheck, iuran.TotalIuran);
+  app.post('/bayariuran', tokencheck, iuran.bayariuran);
+
+  //Wallet
+  app.get('/walletbyuserid/:no_telp', tokencheck, wallet.walletbyuserid);
+  app.get('/mutasiwallet/:id_user', tokencheck, wallet.mutasiwallet);
+  app.post('/addmutasiwallet', tokencheck, wallet.addmutasiwallet);
+   
+  // Dirgantara Function
+  app.get('/totalwalletkoperasi/:id_koperasi', tokencheck, dirgantara.totalwalletkoperasi);
+  app.post('/totalwalletkoperasitingkat', tokencheck, dirgantara.totalwalletkoperasitingkat);
+  app.get('/mutasikoperasi/:id_koperasi', tokencheck, dirgantara.mutasikoperasi);
+  app.post('/addmutasikoperasi', tokencheck, dirgantara.addmutasikoperasi);
+  app.post('/acctolakwallet', tokencheck, dirgantara.acctolakwallet);
+  app.post('/acctolakwalletkoperasi', tokencheck, dirgantara.acctolakwalletkoperasi);
   
+
   // app.get('/api/users', tokencheck, users.findAll);
   // app.get('/api/users', users.findAll);
   // app.get('/api/users/:user_id', users.findOne);

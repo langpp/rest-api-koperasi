@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	const mutasi_koperasi = sequelize.define('mutasi_koperasis', {
+	const mutasi_koperasi = sequelize.define('mutasi_koperases', {
 		id_mutasi : {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -15,6 +15,12 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING
 		},
 		tanggal: {
+			type: Sequelize.STRING,
+		},
+		keterangan: {
+			type: Sequelize.STRING,
+		},
+		status: {
 			type: Sequelize.STRING,
 		},
 	});

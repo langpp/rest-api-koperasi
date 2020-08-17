@@ -20,9 +20,6 @@ module.exports = (sequelize, Sequelize) => {
 		tanggal_pembayaran: {
 			type: Sequelize.STRING
 		},
-		jenis: {
-			type: Sequelize.STRING
-		},
 		status: {
 			type: Sequelize.STRING
 		},
