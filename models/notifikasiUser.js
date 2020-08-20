@@ -17,6 +17,9 @@ module.exports = (sequelize, Sequelize) => {
 		id_user: {
 			type: Sequelize.STRING,
 		},
+		status: {
+			type: Sequelize.STRING,
+		},
 	});
 
 	return notifikasi_user;

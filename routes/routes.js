@@ -7,6 +7,7 @@ module.exports = (app) => {
   const koperasi = require('../controllers/koperasiController.js');
   const wallet = require('../controllers/walletController.js');
   const wilayah = require('../controllers/wilayahController.js');
+  const notifikasi = require('../controllers/notifikasiController.js');
 
   //Users Authentification
   app.post('/auth/checkuser', auth.checkuser);
@@ -74,6 +75,7 @@ module.exports = (app) => {
   app.get('/walletbyuserid/:no_telp', tokencheck, wallet.walletbyuserid);
   app.get('/mutasiwallet/:id_user', tokencheck, wallet.mutasiwallet);
   app.post('/addmutasiwallet', tokencheck, wallet.addmutasiwallet);
+  app.post('/addwallet', tokencheck, wallet.addwallet);
    
   // Dirgantara Function
   app.get('/totalwalletkoperasi/:id_koperasi', tokencheck, dirgantara.totalwalletkoperasi);
@@ -83,12 +85,12 @@ module.exports = (app) => {
   app.post('/acctolakwallet', tokencheck, dirgantara.acctolakwallet);
   app.post('/acctolakwalletkoperasi', tokencheck, dirgantara.acctolakwalletkoperasi);
   
-
-  // app.get('/api/users', tokencheck, users.findAll);
-  // app.get('/api/users', users.findAll);
-  // app.get('/api/users/:user_id', users.findOne);
-  // app.put('/api/users/:user_id', users.update);
-  // app.delete('/api/users/:user_id', users.delete);
+  app.post('/addnotifikasikoperasi', tokencheck, notifikasi.createnotifikasikoperasi);
+  app.post('/addnotifikasiuser', tokencheck, notifikasi.createnotifikasiuser);
+  app.get('/readnotifikasikoperasi/:id_notifikasi', tokencheck, notifikasi.readnotifikasikoperasi);
+  app.get('/readnotifikasiuser/:id_notifikasi', tokencheck, notifikasi.readnotifikasiuser);
+  app.get('/allnotifkoperasi/:id_koperasi', tokencheck, notifikasi.allnotifkoperasi);
+  app.get('/allnotifuser/:id_user', tokencheck, notifikasi.allnotifuser);
 }
 
 var jwt = require('jsonwebtoken');

@@ -1,6 +1,9 @@
 const db = require('../models/index.js');
 const Users = db.users;
 const Mutasiiuran = db.mutasi_iurans;
+const MutasiKoperasi = db.mutasi_koperases;
+const Koperasi = db.koperases;
+const Anggota = db.anggota_koperases;
 var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var express = require('express');
 var moment = require('moment');
@@ -32,22 +35,22 @@ exports.mutasiIuranWajib = (req, res) => {
 	.then(query => {
 		var tanggal = [];
 		for (i = 0; i < query.length; i++) {
-	  		tanggal +=  moment.tz(query[i].tanggal_pembayaran, "Asia/Jakarta").format("YYYY-MM") + ",";
+			tanggal +=  moment.tz(query[i].tanggal_pembayaran, "Asia/Jakarta").format("YYYY-MM") + ",";
 		}
 		var splittanggal = tanggal.split(',');
-  		const [, ...rest] = split.reverse();
+		const [, ...rest] = split.reverse();
 		const lasttanggal = rest.reverse();
 
 		const [, ...rest2] = splittanggal.reverse();
 		const lastquery = rest2.reverse();
 		var tanggalbayar = [];
 		for (i = 0; i < split.length; i++) {
-	  		if(splittanggal.indexOf(split[i]) == -1){
-		        tanggalbayar += moment.tz(split[i], "Asia/Jakarta").format("MMMM YYYY") + ",";
-		    }
+			if(splittanggal.indexOf(split[i]) == -1){
+				tanggalbayar += moment.tz(split[i], "Asia/Jakarta").format("MMMM YYYY") + ",";
+			}
 		}
 		var splittanggalbayar = tanggalbayar.split(',');
-  		const [, ...rest3] = splittanggalbayar.reverse();
+		const [, ...rest3] = splittanggalbayar.reverse();
 		const lasttanggalbayar = rest3.reverse();
 		
 		res.json({
@@ -112,27 +115,27 @@ exports.TotalIuran = (req, res) => {
 	.then(query => {
 		var tanggal = [];
 		for (i = 0; i < query.length; i++) {
-	  		tanggal +=  moment.tz(query[i].tanggal_pembayaran, "Asia/Jakarta").format("YYYY-MM") + ",";
+			tanggal +=  moment.tz(query[i].tanggal_pembayaran, "Asia/Jakarta").format("YYYY-MM") + ",";
 		}
 		var splittanggal = tanggal.split(',');
-  		const [, ...rest] = split.reverse();
+		const [, ...rest] = split.reverse();
 		const lasttanggal = rest.reverse();
 
 		const [, ...rest2] = splittanggal.reverse();
 		const lastquery = rest2.reverse();
 		var tanggalbayar = [];
 		for (i = 0; i < split.length; i++) {
-	  		if(splittanggal.indexOf(split[i]) == -1){
-		        tanggalbayar += moment.tz(split[i], "Asia/Jakarta").format("MMMM YYYY") + ",";
-		    }
+			if(splittanggal.indexOf(split[i]) == -1){
+				tanggalbayar += moment.tz(split[i], "Asia/Jakarta").format("MMMM YYYY") + ",";
+			}
 		}
 		var splittanggalbayar = tanggalbayar.split(',');
-  		const [, ...rest3] = splittanggalbayar.reverse();
+		const [, ...rest3] = splittanggalbayar.reverse();
 		const lasttanggalbayar = rest3.reverse();
 		var totaliuranwajib = lasttanggalbayar.length*10000;
 
 		sequelize.query('SELECT a.* FROM mutasi_iurans as a WHERE a.id_user="'+req.params.id_user+'" AND a.id_iuran="1" AND a.status="Berhasil" ORDER BY a.tanggal_pembayaran DESC;', {
-		type: sequelize.QueryTypes.SELECT
+			type: sequelize.QueryTypes.SELECT
 		})
 		.then(query2 => {
 			if (query2 == "" || query2 == null) {
@@ -155,32 +158,78 @@ exports.TotalIuran = (req, res) => {
 // ALL Mutasi Yang Belum Dibayar
 exports.bayariuran = (req, res) => {
 	const id_user = req.body.id_user;
-    const id_iuran = req.body.id_iuran;
-    const keterangan = req.body.keterangan;
-    const total = req.body.total;
-    const tanggal = req.body.tanggal;
-    Mutasiiuran.create({
-        id_user: id_user,
-        id_iuran: id_iuran,
-        keterangan: keterangan,
-        status: 'Proses',
-        total: total,
-        tanggal_pembayaran: tanggal,
-    })
-    .then(query => { 
-        res.status(201).json({
-            error: false,
-            data: [{
-                status: 'Proses',
-            }],
-            response: "Berhasil Membayar Iuran"
-        });
-    })
-    .catch(error => res.status(201).json({
-        error: true,
-        data: [],
-        response: error
-    }));
+	const id_iuran = req.body.id_iuran;
+	const keterangan = req.body.keterangan;
+	const total = req.body.total;
+	const tanggal = req.body.tanggal;
+
+	var kopkec = (total * 50) / 100;
+	var kopkab = (total * 30) / 100;
+	var kopprov = (total * 15) / 100;
+	var kopnas = (total * 5) / 100;
+
+	const tingkat = req.params.tingkat;
+	Anggota.findOne({
+		where: {
+			id_user: id_user
+		}
+	})
+	.then(anggota => { 
+		var id_koperasi_user = anggota.id_koperasi;
+		Koperasi.findOne({
+			where: {
+				id_koperasi: id_koperasi_user
+			}
+		})
+		.then(datakoperases => { 
+			var datkopkec = id_koperasi_user;
+			var datkopkab = datakoperases.koperasi_kabkot;
+			var datkopprov = datakoperases.koperasi_provinsi;
+			var datkopnas = datakoperases.koperasi_nasional;
+
+		    	addmutasi(datkopkec, "Bagi Hasil Koperasi Kecamatan", kopkec, tanggal, "Debit");
+		    	addmutasi(datkopkab, "Bagi Hasil Koperasi Kabupaten", kopkab, tanggal, "Debit");
+		    	addmutasi(datkopprov, "Bagi Hasil Koperasi Provinsi", kopprov, tanggal, "Debit");
+		    	addmutasi(datkopnas, "Bagi Hasil Koperasi Nasional", kopnas, tanggal, "Debit");
+		    	addwallet(datkopkec, kopkec);
+		    	addwallet(datkopkab, kopkab);
+		    	addwallet(datkopprov, kopprov);
+		    	addwallet(datkopnas, kopnas);
+
+		    	 Mutasiiuran.create({
+			        id_user: id_user,
+			        id_iuran: id_iuran,
+			        keterangan: keterangan,
+			        status: 'Proses',
+			        total: total,
+			        tanggal_pembayaran: tanggal,
+			    })
+			    .then(query => { 
+			        res.status(201).json({
+			            error: false,
+			            data: [{
+			                status: 'Proses',
+			            }],
+			            response: "Berhasil Membayar Iuran"
+			        });
+			    })
+			    .catch(error => res.status(201).json({
+			        error: true,
+			        data: [],
+			        response: error
+			    }));
+			})
+		.catch(error => res.json({
+			error: true,
+			data: [],
+			response: error
+		}));
+	})
+	.catch(error => res.json({
+		error: true,
+		data: [],
+		response: error
+	}));
 };
 
 function listmonthyear(total){
@@ -215,10 +264,38 @@ function dateRange(startDate, endDate) {
 }
 
 function diff_months(dt2, dt1) 
- {
+{
 
-  var diff =(dt2.getTime() - dt1.getTime()) / 1000;
-   diff /= (60 * 60 * 24 * 7 * 4);
-  return Math.abs(Math.round(diff));
-  
- }
+	var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+	diff /= (60 * 60 * 24 * 7 * 4);
+	return Math.abs(Math.round(diff));
+
+}
+
+function addmutasi(id_koperasi, keterangan, total, tanggal, jenis){
+	MutasiKoperasi.create({
+		id_koperasi: id_koperasi,
+		keterangan: keterangan,
+		total: total,
+		status: 'Proses',
+		tanggal: tanggal,
+		jenis: jenis,
+	})
+}
+
+function addwallet(id_koperasi, total){
+	Koperasi.findOne({
+		where: {
+			id_koperasi: id_koperasi
+		}
+	})
+	.then(koperasibyid => {
+		Koperasi.update({
+			wallet: koperasibyid.wallet + total,
+		}, {
+			where: {
+				id_koperasi: id_koperasi
+			}
+		})
+	});
+}

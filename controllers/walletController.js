@@ -111,8 +111,86 @@ exports.addmutasiwallet = (req, res) => {
 	}));
 };
 
+exports.addwallet = (req, res) => {
+	const id_user = req.body.id_user;
+	const total = req.body.total;
+	const tanggal = req.body.tanggal;
+	const jenis = req.body.jenis;
+	const keterangan = req.body.keterangan;
+
+	Users.findOne({
+		where: {
+			id_user: id_user
+		}
+	})
+	.then(wallet => { 
+    	addmutasi(id_user, keterangan, total, tanggal, jenis);
+		Users.update({
+			wallet: wallet.wallet + total,
+		}, {
+			where: {
+				id_user: id_user
+			}
+		}).then(query => { 
+			res.status(201).json({
+				error: false,
+				data: [{
+					status: 'Proses',
+				}],
+				response: "Berhasil Topup Wallet"
+			});
+		})
+		.catch(error => res.status(201).json({
+			error: true,
+			data: [],
+			response: "Gagal"
+		}));
+	})
+	.catch(error => res.json({
+		error: true,
+		data: [],
+		response: error
+	}));
+
+
+
+	MutasiWallet.create({
+		id_user: id_user,
+		keterangan: keterangan,
+		total: total,
+		status: 'Proses',
+		tanggal: tanggal,
+		jenis: jenis,
+	})
+	.then(query => { 
+		res.status(201).json({
+			error: false,
+			data: [{
+				status: 'Proses',
+			}],
+			response: "Berhasil Mengajukan Dana"
+		});
+	})
+	.catch(error => res.status(201).json({
+		error: true,
+		data: [],
+		response: "Gagal"
+	}));
+};
+
 let handleUnAuthorizedError = {
 	error: true,
 	data: [],
 	response: "Token NULL"
+}
+
+function addmutasi(id_user, keterangan, total, tanggal, jenis){
+	MutasiWallet.create({
+		id_user: id_user,
+		keterangan: keterangan,
+		total: total,
+		status: 'Proses',
+		tanggal: tanggal,
+		jenis: jenis,
+	})
 }

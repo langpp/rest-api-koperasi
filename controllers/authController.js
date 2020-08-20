@@ -25,30 +25,30 @@ exports.checkuser = (req, res) => {
         expiresIn: '720h'
     });
     Users.findOne({
-            where: {
-                no_telp: no_telp
-            }
-        })
-        .then(users => {
-            if (users) {
-                res.json({
-                    error: false,
-                    data: [{
-                        no_telp: no_telp,
-                        token: token
-                    }],
-                    response: "Silahkan Masukan Password!"
-                });
-            } else {
-                const {
-                    no_telp,
-                } = req.body;
-                var date = new Date();
-                var dateparse = Date.parse(date) / 1000;
-                var id_user = "USR-" + no_telp.substr(no_telp.length - 6) + "" + makeid();
-                var no_va = "USR" + no_telp;
-                var salt = bcrypt.genSaltSync(10);
-                const password = bcrypt.hashSync("Default", salt);
+        where: {
+            no_telp: no_telp
+        }
+    })
+    .then(users => {
+        if (users) {
+            res.json({
+                error: false,
+                data: [{
+                    no_telp: no_telp,
+                    token: token
+                }],
+                response: "Silahkan Masukan Password!"
+            });
+        } else {
+            const {
+                no_telp,
+            } = req.body;
+            var date = new Date();
+            var dateparse = Date.parse(date) / 1000;
+            var id_user = "USR-" + no_telp.substr(no_telp.length - 6) + "" + makeid();
+            var no_va = "USR" + no_telp;
+            var salt = bcrypt.genSaltSync(10);
+            const password = bcrypt.hashSync("Default", salt);
                 // sendSMS(no_telp, otpNumber);
                 Users.create({
                     id_user: id_user,
@@ -83,13 +83,13 @@ exports.checkuser = (req, res) => {
 
             }
         })
-        .catch(error => {
-            res.json({
-                error: true,
-                data: [],
-                response: error
-            })
-        });
+    .catch(error => {
+        res.json({
+            error: true,
+            data: [],
+            response: error
+        })
+    });
 };
 
 // RESEND OTP SMS
@@ -98,15 +98,15 @@ exports.resendsmsotp = (req, res) => {
     const no_telp = req.body.no_telp;
     var valid = validOTP;
     Users.update({
-            otp: otpNumber,
-            otp_valid: valid
-        }, {
-            where: {
-                no_telp: no_telp
-            }
-        })
-        .then(users => {
-            var message = "Your OTP Number " + otpNumber;
+        otp: otpNumber,
+        otp_valid: valid
+    }, {
+        where: {
+            no_telp: no_telp
+        }
+    })
+    .then(users => {
+        var message = "Your OTP Number " + otpNumber;
             // sendSMS(no_telp, message);
             res.status(201).json({
                 error: false,
@@ -118,12 +118,12 @@ exports.resendsmsotp = (req, res) => {
                 response: "OTP Dikirim Ke Nomor Tersebut"
             });
 
-            })
-        .catch(error => res.json({
-            error: true,
-            data: [],
-            response: error
-        }));
+        })
+    .catch(error => res.json({
+        error: true,
+        data: [],
+        response: error
+    }));
 };
 
 // INSERT NEW PASSWORD AFTER REGISTER
@@ -201,79 +201,79 @@ exports.sendotpmail = (req, res) => {
         expiresIn: '720h'
     });
     Users.findOne({
-            where: {
-                no_telp: no_telp
-            }
-        })
-        .then(users => {
-            if (users) {
-                var mail = users.email;
-                Users.update({
-                        otp: otpNumber,
-                        otp_valid: valid
-                    }, {
-                        where: {
-                            no_telp: no_telp
-                        }
-                    })
-                    .then((users) => {
-                        var transporter = nodemailer.createTransport({
-                            service: 'gmail',
-                            auth: {
-                                user: 'koperasidev123@gmail.com',
-                                pass: 'koperasi123'
-                            }
-                        });
-
-                        var mailOptions = {
-                            from: 'koperasidev123@gmail.com',
-                            to: mail,
-                            subject: 'Verifikasi OTP',
-                            text: 'Your OTP Number ' + otpNumber,
-                        };
-
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                res.json({
-                                    error: true,
-                                    data: [],
-                                    response: error
-                                })
-                            } else {
-                                res.json({
-                                    error: false,
-                                    data: [{
-                                        no_telp: no_telp,
-                                        otp: otpNumber,
-                                        otp_valid: valid,
-                                        email: mail
-                                    }],
-                                    response: "OTP Dikirim Ke Email Tersebut"
-                                });
-                            }
-                        });
-
-                    })
-                    .catch(error => res.json({
-                        error: true,
-                        data: [],
-                        response: error
-                    }));
-            } else {
-                res.json({
-                    error: false,
-                    data: [],
-                    response: "User Belum Memasukan Email"
+        where: {
+            no_telp: no_telp
+        }
+    })
+    .then(users => {
+        if (users) {
+            var mail = users.email;
+            Users.update({
+                otp: otpNumber,
+                otp_valid: valid
+            }, {
+                where: {
+                    no_telp: no_telp
+                }
+            })
+            .then((users) => {
+                var transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'koperasidev123@gmail.com',
+                        pass: 'koperasi123'
+                    }
                 });
-            }
-        })
-        .catch(error => {
-            res.json({
+
+                var mailOptions = {
+                    from: 'koperasidev123@gmail.com',
+                    to: mail,
+                    subject: 'Verifikasi OTP',
+                    text: 'Your OTP Number ' + otpNumber,
+                };
+
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        res.json({
+                            error: true,
+                            data: [],
+                            response: error
+                        })
+                    } else {
+                        res.json({
+                            error: false,
+                            data: [{
+                                no_telp: no_telp,
+                                otp: otpNumber,
+                                otp_valid: valid,
+                                email: mail
+                            }],
+                            response: "OTP Dikirim Ke Email Tersebut"
+                        });
+                    }
+                });
+
+            })
+            .catch(error => res.json({
                 error: true,
                 data: [],
                 response: error
-            })
-        });
+            }));
+        } else {
+            res.json({
+                error: false,
+                data: [],
+                response: "User Belum Memasukan Email"
+            });
+        }
+    })
+    .catch(error => {
+        res.json({
+            error: true,
+            data: [],
+            response: error
+        })
+    });
 };
 
 // VALIDATE OTP SMS
@@ -282,39 +282,31 @@ exports.validatesmsotp = (req, res) => {
     const otp = req.body.otp;
 
     Users.findOne({
-            where: {
-                no_telp: no_telp,
-                otp: otp
-            }
-        })
-        .then(users => {
-            if (users) {
-                const t1 = new Date(dateNow);
-                const t2 = new Date(users.otp_valid);
-                var delta = Math.abs(t2 - t1) / 1000;
-                var days = Math.floor(delta / 86400);
-                delta -= days * 86400;
-                var hours = Math.floor(delta / 3600) % 24;
-                delta -= hours * 3600;
-                var minutes = Math.floor(delta / 60) % 60;
+        where: {
+            no_telp: no_telp,
+            otp: otp
+        }
+    })
+    .then(users => {
+        if (users) {
+            const t1 = new Date(dateNow);
+            const t2 = new Date(users.otp_valid);
+            var delta = Math.abs(t2 - t1) / 1000;
+            var days = Math.floor(delta / 86400);
+            delta -= days * 86400;
+            var hours = Math.floor(delta / 3600) % 24;
+            delta -= hours * 3600;
+            var minutes = Math.floor(delta / 60) % 60;
 
-                if (minutes >= 0) {
-                    res.status(201).json({
-                        error: false,
-                        data: [{
-                            otp: users.otp_valid,
-                            no_telp: no_telp
-                        }],
-                        response: "Validasi OTP Berhasil"
-                    });
-                } else {
-                    res.status(201).json({
-                        error: true,
-                        data: [],
-                        response: "Validasi Gagal"
-                    });
-                }
-
+            if (minutes >= 0) {
+                res.status(201).json({
+                    error: false,
+                    data: [{
+                        otp: users.otp_valid,
+                        no_telp: no_telp
+                    }],
+                    response: "Validasi OTP Berhasil"
+                });
             } else {
                 res.status(201).json({
                     error: true,
@@ -322,14 +314,22 @@ exports.validatesmsotp = (req, res) => {
                     response: "Validasi Gagal"
                 });
             }
-        })
-        .catch(error => {
-            res.json({
+
+        } else {
+            res.status(201).json({
                 error: true,
                 data: [],
-                response: error
-            })
-        });
+                response: "Validasi Gagal"
+            });
+        }
+    })
+    .catch(error => {
+        res.json({
+            error: true,
+            data: [],
+            response: error
+        })
+    });
 };
 
 // VALIDATE OTP EMAIL
@@ -337,39 +337,31 @@ exports.validateemailotp = (req, res) => {
     const email = req.body.email;
     const otp = req.body.otp;
     Users.findOne({
-            where: {
-                email: email,
-                otp: otp
-            }
-        })
-        .then(users => {
-            if (users) {
-                const t1 = new Date(dateNow);
-                const t2 = new Date(users.otp_valid);
-                var delta = Math.abs(t2 - t1) / 1000;
-                var days = Math.floor(delta / 86400);
-                delta -= days * 86400;
-                var hours = Math.floor(delta / 3600) % 24;
-                delta -= hours * 3600;
-                var minutes = Math.floor(delta / 60) % 60;
+        where: {
+            email: email,
+            otp: otp
+        }
+    })
+    .then(users => {
+        if (users) {
+            const t1 = new Date(dateNow);
+            const t2 = new Date(users.otp_valid);
+            var delta = Math.abs(t2 - t1) / 1000;
+            var days = Math.floor(delta / 86400);
+            delta -= days * 86400;
+            var hours = Math.floor(delta / 3600) % 24;
+            delta -= hours * 3600;
+            var minutes = Math.floor(delta / 60) % 60;
 
-                if (minutes >= 0) {
-                    res.status(201).json({
-                        error: false,
-                        data: [{
-                            otp: users.otp_valid,
-                            email: email
-                        }],
-                        response: "Validasi OTP Berhasil"
-                    });
-                } else {
-                    res.status(201).json({
-                        error: true,
-                        data: [],
-                        response: "Validasi Gagal"
-                    });
-                }
-
+            if (minutes >= 0) {
+                res.status(201).json({
+                    error: false,
+                    data: [{
+                        otp: users.otp_valid,
+                        email: email
+                    }],
+                    response: "Validasi OTP Berhasil"
+                });
             } else {
                 res.status(201).json({
                     error: true,
@@ -377,14 +369,22 @@ exports.validateemailotp = (req, res) => {
                     response: "Validasi Gagal"
                 });
             }
-        })
-        .catch(error => {
-            res.json({
+
+        } else {
+            res.status(201).json({
                 error: true,
                 data: [],
-                response: error
-            })
-        });
+                response: "Validasi Gagal"
+            });
+        }
+    })
+    .catch(error => {
+        res.json({
+            error: true,
+            data: [],
+            response: error
+        })
+    });
 };
 
 let handleUnAuthorizedError = {

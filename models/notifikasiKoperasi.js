@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-	const notifikasi_koperasi = sequelize.define('notifikasi_koperasis', {
+	const notifikasi_koperasi = sequelize.define('notifikasi_koperases', {
 		id_notifikasi : {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -15,6 +15,9 @@ module.exports = (sequelize, Sequelize) => {
 			type: Sequelize.STRING
 		},
 		id_koperasi: {
+			type: Sequelize.STRING,
+		},
+		status: {
 			type: Sequelize.STRING,
 		},
 	});
